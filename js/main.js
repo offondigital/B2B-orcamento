@@ -11,7 +11,7 @@
 // ──────────────────────────────────────────────
 // 1. CONFIGURAÇÃO — cole sua URL do Apps Script aqui
 // ──────────────────────────────────────────────
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby_Uu85jmmrTbPdcwYlJ6Szqjg1nKOc5CA2LIuJotR78LSImvvMOTyLD4c5rsVBICQ/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx9nPHlMZtzmJzp-4tGI8IVfb8oVnncYUgoEE0PcEvLNz9wrXZjLMeODLNqFu3LzdLq/exec';
 
 // ──────────────────────────────────────────────
 // 2. MÁSCARA DE TELEFONE  (45) 9 9999-9999
