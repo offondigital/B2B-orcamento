@@ -22,8 +22,8 @@
   --shadow-card:  0 4px 28px rgba(11,45,94,0.10);
   --shadow-btn:   0 6px 24px rgba(21,81,168,0.28);
   --transition:   0.25s ease;
-  --font-display: 'Syne', sans-serif;
-  --font-body:    'DM Sans', sans-serif;
+  --font-display: 'Poppins', sans-serif;
+  --font-body:    'Inter', sans-serif;
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
