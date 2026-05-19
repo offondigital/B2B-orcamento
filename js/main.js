@@ -1,17 +1,39 @@
 /* =============================================
    CASA DA LIMPEZA — main.js
-   - Máscara telefone: (45) 9 9999-9999
-   - Máscara e validação e-mail
-   - Validação completa do formulário
-   - Integração Google Sheets via Apps Script
-   - Lazy loading por IntersectionObserver
-   - Auto-fill produto pelo botão dos cards
+   - Máscara telefone (45) 9 9999-9999
+   - Validação campo a campo em tempo real
+   - Multi-select checkboxes com thumbs visuais
+   - Pré-seleção via botão dos cards
+   - Textarea "outros produtos"
+   - Envio Google Sheets via Apps Script
+   - Lazy loading IntersectionObserver
+   - Smooth scroll CTAs internos
+   - Push dataLayer GTM em eventos chave
 ============================================= */
 
 // ──────────────────────────────────────────────
-// 1. CONFIGURAÇÃO — cole sua URL do Apps Script aqui
+// 1. CONFIGURAÇÃO — cole sua URL do Apps Script
 // ──────────────────────────────────────────────
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxuFmb7r6dWLOST1Y85gbcoHQjAWJ9HItJtbS9_9ZslQ3O54yfFw5IT0qOx1pfZLwwG/exec';
+
+// Mapeamento: valor do checkbox → src da imagem e label
+const PRODUTO_MAP = {
+  'Detergente 5L': {
+    img: 'img/detergente.png',
+    alt: 'Detergente 5L',
+    label: 'Detergente 5L',
+  },
+  'Desinfetante 5L': {
+    img: 'img/desinfetante.png',
+    alt: 'Desinfetante 5L',
+    label: 'Desinfetante 5L',
+  },
+  'Quero escolher outros produtos': {
+    img: 'img/outros-produtos.png',
+    alt: 'Outros Produtos',
+    label: 'Outros Produtos',
+  },
+};
 
 // ──────────────────────────────────────────────
 // 2. MÁSCARA DE TELEFONE  (45) 9 9999-9999
@@ -28,7 +50,7 @@ function maskPhone(value) {
 const phoneInput = document.getElementById('telefone');
 if (phoneInput) {
   phoneInput.addEventListener('input', function () {
-    const pos = this.selectionStart;
+    const pos  = this.selectionStart;
     const prev = this.value.length;
     this.value = maskPhone(this.value);
     const delta = this.value.length - prev;
@@ -44,17 +66,19 @@ const validators = {
   empresa:  v => v.trim().length >= 2,
   email:    v => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim()),
   telefone: v => /^\(\d{2}\) \d \d{4}-\d{4}$/.test(v.trim()),
-  endereco: v => v.trim().length >= 8,
-  produto:  v => v !== '',
+  rua:      v => v.trim().length >= 3,
+  numero:   v => v.trim().length >= 1,
+  cidade:   v => v.trim().length >= 2,
 };
 
-const errors = {
+const errorMessages = {
   nome:     'Informe seu nome completo (mínimo 3 caracteres).',
   empresa:  'Informe o nome da empresa.',
   email:    'Informe um e-mail válido (ex: email@empresa.com.br).',
   telefone: 'Informe o telefone no formato (45) 9 9999-9999.',
-  endereco: 'Informe o endereço completo.',
-  produto:  'Selecione o produto de interesse.',
+  rua:      'Informe o nome da rua ou avenida.',
+  numero:   'Informe o número.',
+  cidade:   'Informe a cidade.',
 };
 
 function validateField(name) {
@@ -64,45 +88,116 @@ function validateField(name) {
 
   const ok = validators[name](el.value);
   el.classList.toggle('invalid', !ok);
-  el.classList.toggle('valid', ok);
-  errEl.textContent = ok ? '' : errors[name];
+  el.classList.toggle('valid',   ok);
+  errEl.textContent = ok ? '' : errorMessages[name];
+  return ok;
+}
+
+function validateProdutos() {
+  const checked = document.querySelectorAll('input[name="produtos"]:checked');
+  const errEl   = document.getElementById('erro-produtos');
+  const ok      = checked.length > 0;
+  if (errEl) errEl.textContent = ok ? '' : 'Selecione pelo menos um produto.';
   return ok;
 }
 
 // Validação em tempo real (blur)
-['nome','empresa','email','telefone','endereco','produto'].forEach(name => {
+['nome','empresa','email','telefone','rua','numero','cidade'].forEach(name => {
   const el = document.getElementById(name);
-  if (el) {
-    el.addEventListener('blur', () => validateField(name));
-    el.addEventListener('input', () => {
-      if (el.classList.contains('invalid')) validateField(name);
-    });
-  }
+  if (!el) return;
+  el.addEventListener('blur',  () => validateField(name));
+  el.addEventListener('input', () => {
+    if (el.classList.contains('invalid')) validateField(name);
+  });
 });
 
 // ──────────────────────────────────────────────
-// 4. AUTO-FILL PRODUTO pelo botão dos cards
+// 4. THUMBS DE PRODUTO — atualiza imagens selecionadas
 // ──────────────────────────────────────────────
-document.querySelectorAll('[data-fill]').forEach(btn => {
-  btn.addEventListener('click', function (e) {
-    const sel = document.getElementById('produto');
-    if (!sel) return;
-    const map = {
-      detergente:  'Detergente 5L',
-      desinfetante:'Desinfetante 5L',
-    };
-    const target = map[this.dataset.fill];
-    if (target) {
-      for (const opt of sel.options) {
-        if (opt.value === target) { opt.selected = true; break; }
-      }
-      validateField('produto');
+function updateThumbs() {
+  const thumbsContainer = document.getElementById('produtos-thumbs');
+  const wrapper         = document.getElementById('produtos-selecionados');
+  if (!thumbsContainer || !wrapper) return;
+
+  const checked = [...document.querySelectorAll('input[name="produtos"]:checked')];
+  thumbsContainer.innerHTML = '';
+
+  if (checked.length === 0) {
+    wrapper.style.display = 'none';
+    return;
+  }
+
+  wrapper.style.display = 'block';
+
+  checked.forEach(cb => {
+    const info = PRODUTO_MAP[cb.value];
+    if (!info) return;
+
+    const div  = document.createElement('div');
+    div.className = 'produto-thumb';
+
+    const img  = document.createElement('img');
+    img.src    = info.img;
+    img.alt    = info.alt;
+    img.loading = 'lazy';
+
+    const span = document.createElement('span');
+    span.textContent = info.label;
+
+    div.appendChild(img);
+    div.appendChild(span);
+    thumbsContainer.appendChild(div);
+  });
+}
+
+// Escuta mudanças nos checkboxes
+document.querySelectorAll('input[name="produtos"]').forEach(cb => {
+  cb.addEventListener('change', () => {
+    updateThumbs();
+    validateProdutos();
+
+    // Push GTM: produto selecionado
+    if (typeof window.dataLayer !== 'undefined') {
+      window.dataLayer.push({
+        event: 'produto_selecionado',
+        produto: cb.value,
+        acao: cb.checked ? 'marcado' : 'desmarcado',
+      });
     }
   });
 });
 
 // ──────────────────────────────────────────────
-// 5. ENVIO — Google Sheets via Apps Script
+// 5. PRÉ-SELEÇÃO pelo botão dos cards
+// ──────────────────────────────────────────────
+const FILL_MAP = {
+  detergente:   'Detergente 5L',
+  desinfetante: 'Desinfetante 5L',
+};
+
+document.querySelectorAll('[data-fill]').forEach(btn => {
+  btn.addEventListener('click', function () {
+    const valor = FILL_MAP[this.dataset.fill];
+    if (!valor) return;
+
+    const cb = document.querySelector(`input[name="produtos"][value="${valor}"]`);
+    if (cb && !cb.checked) {
+      cb.checked = true;
+      updateThumbs();
+    }
+
+    // Push GTM: CTA card clicado
+    if (typeof window.dataLayer !== 'undefined') {
+      window.dataLayer.push({
+        event: 'cta_produto_clicado',
+        produto: valor,
+      });
+    }
+  });
+});
+
+// ──────────────────────────────────────────────
+// 6. ENVIO — Google Sheets via Apps Script
 // ──────────────────────────────────────────────
 const form      = document.getElementById('lead-form');
 const successEl = document.getElementById('form-success');
@@ -112,45 +207,64 @@ if (form) {
   form.addEventListener('submit', async function (e) {
     e.preventDefault();
 
-    // Valida todos os campos
-    const fields = ['nome','empresa','email','telefone','endereco','produto'];
-    const allOk  = fields.map(validateField).every(Boolean);
-    if (!allOk) {
-      // Scroll até o primeiro erro
-      const firstErr = form.querySelector('.invalid');
+    // Validar campos de texto
+    const campos = ['nome','empresa','email','telefone','rua','numero','cidade'];
+    const camposOk = campos.map(validateField).every(Boolean);
+    const produtosOk = validateProdutos();
+
+    if (!camposOk || !produtosOk) {
+      const firstErr = form.querySelector('.invalid, #erro-produtos:not(:empty)');
       if (firstErr) firstErr.scrollIntoView({ behavior: 'smooth', block: 'center' });
       return;
     }
 
-    // Desabilita botão
+    // Desabilitar botão
     btnSubmit.disabled = true;
-    btnSubmit.querySelector('.btn-text').style.display = 'none';
+    btnSubmit.querySelector('.btn-text').style.display  = 'none';
     btnSubmit.querySelector('.btn-loader').style.display = 'inline';
 
+    // Montar lista de produtos selecionados
+    const produtosSelecionados = [...document.querySelectorAll('input[name="produtos"]:checked')]
+      .map(cb => cb.value)
+      .join(' + ');
+
     const payload = {
-      nome:      document.getElementById('nome').value.trim(),
-      empresa:   document.getElementById('empresa').value.trim(),
-      email:     document.getElementById('email').value.trim(),
-      telefone:  document.getElementById('telefone').value.trim(),
-      endereco:  document.getElementById('endereco').value.trim(),
-      produto:   document.getElementById('produto').value,
-      dataHora:  new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' }),
+      nome:           document.getElementById('nome').value.trim(),
+      empresa:        document.getElementById('empresa').value.trim(),
+      email:          document.getElementById('email').value.trim(),
+      telefone:       document.getElementById('telefone').value.trim(),
+      rua:            document.getElementById('rua').value.trim(),
+      numero:         document.getElementById('numero').value.trim(),
+      cidade:         document.getElementById('cidade').value.trim(),
+      produtos:       produtosSelecionados,
+      outrosProdutos: document.getElementById('outros-produtos').value.trim(),
+      dataHora:       new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' }),
     };
 
     try {
       await fetch(APPS_SCRIPT_URL, {
         method: 'POST',
-        mode: 'no-cors',
+        mode:   'no-cors',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
+        body:    JSON.stringify(payload),
       });
-      // no-cors retorna opaque — assumimos sucesso se não houve exceção
-      form.style.display = 'none';
-      successEl.style.display = 'block';
+
+      // Push GTM: conversão
+      if (typeof window.dataLayer !== 'undefined') {
+        window.dataLayer.push({
+          event:    'lead_enviado',
+          produtos: produtosSelecionados,
+          cidade:   payload.cidade,
+        });
+      }
+
+      // Redirecionar para página de sucesso
+      window.location.href = 'obrigado.html';
+
     } catch (err) {
       console.error('Erro ao enviar:', err);
       btnSubmit.disabled = false;
-      btnSubmit.querySelector('.btn-text').style.display = 'inline';
+      btnSubmit.querySelector('.btn-text').style.display  = 'inline';
       btnSubmit.querySelector('.btn-loader').style.display = 'none';
       alert('Erro ao enviar. Verifique sua conexão e tente novamente.');
     }
@@ -158,9 +272,10 @@ if (form) {
 }
 
 // ──────────────────────────────────────────────
-// 6. LAZY LOADING — IntersectionObserver
+// 7. LAZY LOADING — IntersectionObserver
 // ──────────────────────────────────────────────
 const lazyEls = document.querySelectorAll('.lazy-section, .lazy-item');
+
 if ('IntersectionObserver' in window) {
   const obs = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
@@ -173,12 +288,11 @@ if ('IntersectionObserver' in window) {
 
   lazyEls.forEach(el => obs.observe(el));
 } else {
-  // Fallback para navegadores antigos
   lazyEls.forEach(el => el.classList.add('visible'));
 }
 
 // ──────────────────────────────────────────────
-// 7. SMOOTH SCROLL para CTAs internos
+// 8. SMOOTH SCROLL para CTAs internos
 // ──────────────────────────────────────────────
 document.querySelectorAll('a[href^="#"]').forEach(a => {
   a.addEventListener('click', function (e) {
