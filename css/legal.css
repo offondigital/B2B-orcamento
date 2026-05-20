@@ -1,0 +1,277 @@
+/* =============================================
+   CASA DA LIMPEZA — legal.css
+   Estilos para: privacidade, termos, cookies
+============================================= */
+
+.legal-page {
+  background: var(--gray-50);
+  min-height: 100vh;
+  padding: 60px 0 80px;
+}
+
+.legal-container {
+  max-width: 780px;
+}
+
+/* ---- HEADER ---- */
+.legal-header {
+  margin-bottom: 40px;
+}
+
+.legal-badge {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--blue-mid);
+  background: var(--blue-light);
+  border-radius: 50px;
+  padding: 5px 14px;
+  margin-bottom: 14px;
+}
+
+.legal-header h1 {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
+  font-weight: 800;
+  color: var(--blue-dark);
+  line-height: 1.2;
+  margin-bottom: 8px;
+}
+
+.legal-updated {
+  font-size: 0.85rem;
+  color: var(--gray-400);
+}
+
+/* ---- BODY ---- */
+.legal-body {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  padding: 48px 52px;
+  box-shadow: var(--shadow-card);
+  border: 1px solid var(--gray-100);
+}
+
+.legal-body h2 {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--blue-dark);
+  margin: 32px 0 10px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--blue-light);
+}
+
+.legal-body h2:first-child {
+  margin-top: 0;
+}
+
+.legal-body h3 {
+  font-family: var(--font-display);
+  font-size: 0.97rem;
+  font-weight: 700;
+  color: var(--blue-mid);
+  margin: 20px 0 8px;
+}
+
+.legal-body p {
+  font-size: 0.95rem;
+  color: var(--gray-700);
+  line-height: 1.75;
+  margin-bottom: 12px;
+}
+
+.legal-body ul {
+  margin: 8px 0 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.legal-body ul li {
+  font-size: 0.93rem;
+  color: var(--gray-700);
+  line-height: 1.6;
+}
+
+.legal-body a {
+  color: var(--blue-mid);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.legal-body a:hover { color: var(--blue-dark); }
+
+.legal-disclaimer {
+  margin-top: 40px;
+  padding: 14px 18px;
+  background: var(--gray-50);
+  border-left: 3px solid var(--gray-100);
+  border-radius: 8px;
+  font-size: 0.78rem;
+  color: var(--gray-400);
+  font-style: italic;
+}
+
+/* ---- TABELA COOKIES ---- */
+.cookie-table-wrap {
+  overflow-x: auto;
+  margin: 16px 0 24px;
+  border-radius: var(--radius);
+  border: 1px solid var(--gray-100);
+}
+
+.cookie-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+
+.cookie-table thead {
+  background: var(--blue-dark);
+  color: var(--white);
+}
+
+.cookie-table th {
+  padding: 12px 16px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.82rem;
+  letter-spacing: 0.04em;
+}
+
+.cookie-table tbody tr {
+  border-bottom: 1px solid var(--gray-100);
+  transition: background 0.15s;
+}
+.cookie-table tbody tr:last-child { border-bottom: none; }
+.cookie-table tbody tr:hover { background: var(--gray-50); }
+
+.cookie-table td {
+  padding: 12px 16px;
+  color: var(--gray-700);
+  line-height: 1.5;
+}
+
+.cookie-table td code {
+  background: var(--blue-light);
+  color: var(--blue-mid);
+  padding: 2px 7px;
+  border-radius: 5px;
+  font-size: 0.82rem;
+  font-family: monospace;
+}
+
+/* =============================================
+   POPUP DE COOKIES
+============================================= */
+.cookie-popup {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  width: calc(100% - 48px);
+  max-width: 760px;
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 8px 48px rgba(11,45,94,0.18);
+  border: 1.5px solid var(--gray-100);
+  padding: 24px 28px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  animation: slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateX(-50%) translateY(30px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+.cookie-popup.hide {
+  animation: slideDown 0.3s ease forwards;
+}
+
+@keyframes slideDown {
+  to { opacity: 0; transform: translateX(-50%) translateY(40px); }
+}
+
+.cookie-popup__icon {
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+
+.cookie-popup__text {
+  flex: 1;
+}
+
+.cookie-popup__text p {
+  font-size: 0.88rem;
+  color: var(--gray-700);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.cookie-popup__text a {
+  color: var(--blue-mid);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.cookie-popup__actions {
+  display: flex;
+  gap: 10px;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+
+.cookie-btn-accept {
+  background: var(--blue-mid);
+  color: var(--white);
+  border: none;
+  padding: 10px 20px;
+  border-radius: 50px;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+  white-space: nowrap;
+}
+.cookie-btn-accept:hover { background: var(--blue-dark); transform: translateY(-1px); }
+
+.cookie-btn-decline {
+  background: transparent;
+  color: var(--gray-400);
+  border: 1.5px solid var(--gray-100);
+  padding: 10px 20px;
+  border-radius: 50px;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+  white-space: nowrap;
+}
+.cookie-btn-decline:hover { border-color: var(--gray-400); color: var(--gray-700); }
+
+/* =============================================
+   RESPONSIVE LEGAL
+============================================= */
+@media (max-width: 640px) {
+  .legal-body { padding: 28px 20px; }
+  .legal-page { padding: 40px 0 60px; }
+
+  .cookie-popup {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    bottom: 16px;
+    padding: 20px;
+  }
+  .cookie-popup__actions { width: 100%; }
+  .cookie-btn-accept,
+  .cookie-btn-decline { flex: 1; text-align: center; }
+}
