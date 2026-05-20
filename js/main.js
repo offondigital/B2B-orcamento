@@ -14,7 +14,7 @@
 // ──────────────────────────────────────────────
 // 1. CONFIGURAÇÃO — cole sua URL do Apps Script
 // ──────────────────────────────────────────────
-const APPS_SCRIPT_URL = 'COLE_SUA_URL_DO_APPS_SCRIPT_AQUI';
+const APPS_SCRIPT_URL = '1mxeDdAbnsVmyUwBCEinX4yAIg5y6m7PpfoDG4BQLMjI';
 
 // Mapeamento: valor do checkbox → src da imagem e label
 const PRODUTO_MAP = {
