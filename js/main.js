@@ -14,7 +14,7 @@
 // ──────────────────────────────────────────────
 // 1. CONFIGURAÇÃO — cole sua URL do Apps Script
 // ──────────────────────────────────────────────
-const APPS_SCRIPT_URL = '1mxeDdAbnsVmyUwBCEinX4yAIg5y6m7PpfoDG4BQLMjI';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzOdL2CdeUDon2CS2phyp4J-m9LjX3R-KMZlJ6n2uYyHLLe-r_bAJNtZXnWGk-G-Q/exec';
 
 // Mapeamento: valor do checkbox → src da imagem e label
 const PRODUTO_MAP = {
