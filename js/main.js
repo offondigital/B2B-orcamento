@@ -19,17 +19,17 @@ const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzOdL2CdeUDon2C
 // Mapeamento: valor do checkbox → src da imagem e label
 const PRODUTO_MAP = {
   'Detergente 5L': {
-    img: 'img/detergente.png',
+    img: 'img/detergente.webp',
     alt: 'Detergente 5L',
     label: 'Detergente 5L',
   },
   'Desinfetante 5L': {
-    img: 'img/desinfetante.png',
+    img: 'img/desinfetante.webp',
     alt: 'Desinfetante 5L',
     label: 'Desinfetante 5L',
   },
   'Quero escolher outros produtos': {
-    img: 'img/outros-produtos.png',
+    img: 'img/outros-produtos.webp',
     alt: 'Outros Produtos',
     label: 'Outros Produtos',
   },
